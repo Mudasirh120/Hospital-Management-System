@@ -39,4 +39,3 @@ Different loops are employed to enhance the efficiency and user-friendliness of 
 
 - Use the login function to access the system.
 - Navigate through the different modules to manage doctors, patients, departments, and medicines.
-

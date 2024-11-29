@@ -1,3 +1,0 @@
-[Name Fatima, Relative's Name Ejaz, 
-Gender: f, 
-Disease: Teeth_Pain, Department: Dental]
