@@ -1,10 +1,12 @@
 package com.mudasir.hospitalmanagementsystem.service;
 import com.mudasir.hospitalmanagementsystem.util.AccountType;
+import com.mudasir.hospitalmanagementsystem.util.LoginRead;
+import com.mudasir.hospitalmanagementsystem.util.RegisterWrite;
 import java.util.Scanner;
 public class Login {
     private static String username;
     private static String fatherName;
-    private static long cnic;
+    private static String cnic;
     private static String password;
     private static String city;
     private static String recoverykey;
@@ -14,8 +16,38 @@ public class Login {
     private static String storedRecoveryKey;
     private static boolean loggedIn = false;
     private static int choice;
+    public static void setStoredUsername(String storedUsername) {
+        Login.storedUsername = storedUsername;
+    }
+    public static void setStoredPassword(String storedPassword){
+        Login.storedPassword = storedPassword;
+    }
+    public static void setStoredRecovery(String storedRecovery){
+        Login.storedRecoveryKey = storedRecovery;
+    }
     public static void setAccType(String role){
         accountType=role;
+    }
+    public static String getUserName(){
+        return username;
+    }
+    public static String getFatherName(){
+        return fatherName;
+    }
+    public static String getCnic(){
+        return cnic;
+    }
+    public static String getRecoveryKey(){
+        return recoverykey;
+    }
+    public static String getCity(){
+        return city;
+    }
+    public static String getAccountType(){
+        return accountType;
+    }
+    public static String getPassword(){
+        return password;
     }
     public static void register(){
         Scanner scanner = new Scanner(System.in);
@@ -24,24 +56,25 @@ public class Login {
         System.out.print("\t\t\t\t\t\t\t  FatherName: ");
         fatherName = scanner.nextLine();
         System.out.print("\t\t\t\t\t\t\t  cnic: ");
-        cnic = scanner.nextLong();
+        cnic = scanner.nextLine();
         scanner.nextLine();
         System.out.print("\t\t\t\t\t\t\t  City: ");
         city = scanner.nextLine();
-        AccountType.Role();
-        System.out.println("Role Accepted.");
         System.out.print("\t\t\t\t\t\t\t  Password: ");
         password = scanner.nextLine();
         System.out.print("\t\t\t\t\t\t\t  Recovery key : ");
         recoverykey= scanner.nextLine();
+        AccountType.Role();
         System.out.println("\n\n\t\t\t\t\t\t\t Successful Signup.");
-        scanner.close();
+        RegisterWrite.writeFile(accountType);
         login();
+        scanner.close();
     }    
     public static void login(){
         Scanner scanner=new Scanner(System.in);
-        System.out.print("\n\n\t\t\t\t\t\t Cnic: ");
-        cnic= scanner.nextLong();
+        System.out.print("\t\t\t\t\t\t\t  cnic: ");
+        cnic = scanner.nextLine();
+        LoginRead.readFile(cnic);
         while (loggedIn==false) {
             System.out.print("\n\n\t\t\t\t\t\t Username: ");
             username= scanner.nextLine();
