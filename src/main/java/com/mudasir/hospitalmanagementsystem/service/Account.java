@@ -1,8 +1,6 @@
 package com.mudasir.hospitalmanagementsystem.service;
 import java.util.Scanner;
 class Account{
-    public static double interest;
-    public static double transcationlimit;
     public static void displayAccount(){
         Scanner scanner= new Scanner(System.in);
         String password="";

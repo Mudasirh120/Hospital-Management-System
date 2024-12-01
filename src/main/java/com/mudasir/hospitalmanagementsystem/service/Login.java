@@ -1,111 +1,52 @@
 package com.mudasir.hospitalmanagementsystem.service;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException; 
+import com.mudasir.hospitalmanagementsystem.util.AccountType;
 import java.util.Scanner;
-import java.util.Random;
 public class Login {
-    public static void createFile(){
-        try {
-            File myFile = new File("resources/users.csv");
-            if (myFile.createNewFile()) {
-              System.out.println("File created: " + myFile.getName());
-            } else {
-              System.out.println("File already exists.");
-            }
-          } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
-          }
-    }
-    private static long patientNumber;
     private static String username;
+    private static String fatherName;
+    private static long cnic;
     private static String password;
-    private static String storedUsername="Mudasir";
-    private static String storedPassword="Mudasir";
+    private static String city;
     private static String recoverykey;
-    public static void setStoredUsername(String username) {
-        Login.storedUsername = username;
-    }
-    public static String getStoredUsername() {
-        return storedUsername;
-    }
-    public static String getRecoverykey() {
-        return recoverykey;
-    }
-    public static void setRecoverykey(String recoverykey) {
-        Login.recoverykey = recoverykey;
-    }
-    public static String getStoredPassword() {
-        return storedPassword;
-    }
-    public static void setStoredPassword(String storedPassword) {
-        Login.storedPassword = storedPassword;
-    }
-    public static long getPatientNumber() {
-        return patientNumber;
-    }
+    private static String accountType;
+    private static String storedUsername;
+    private static String storedPassword;
+    private static String storedRecoveryKey;
     private static boolean loggedIn = false;
     private static int choice;
-    public static void writeFile(){
-       try {
-      FileWriter myWriter = new FileWriter("resources/users.csv");
-      myWriter.write(patientNumber + "," + storedUsername + "," + storedPassword + "," + recoverykey + "\n");
-      myWriter.close();
-      System.out.println("Successfully wrote to the file.");
-    } catch (IOException e) {
-      System.out.println("An error occurred.");
-      e.printStackTrace();
-    }
+    public static void setAccType(String role){
+        accountType=role;
     }
     public static void register(){
-        Random rand = new Random();
         Scanner scanner = new Scanner(System.in);
         System.out.print("\t\t\t\t\t\t\t  Username: ");
-        storedUsername = scanner.nextLine();
+        username = scanner.nextLine();
+        System.out.print("\t\t\t\t\t\t\t  FatherName: ");
+        fatherName = scanner.nextLine();
+        System.out.print("\t\t\t\t\t\t\t  cnic: ");
+        cnic = scanner.nextLong();
+        scanner.nextLine();
+        System.out.print("\t\t\t\t\t\t\t  City: ");
+        city = scanner.nextLine();
+        AccountType.Role();
+        System.out.println("Role Accepted.");
         System.out.print("\t\t\t\t\t\t\t  Password: ");
-        storedPassword = scanner.nextLine();
+        password = scanner.nextLine();
         System.out.print("\t\t\t\t\t\t\t  Recovery key : ");
         recoverykey= scanner.nextLine();
-        long acNumber= rand.nextLong(100000000);
-        patientNumber=acNumber;
         System.out.println("\n\n\t\t\t\t\t\t\t Successful Signup.");
         scanner.close();
-        writeFile();
         login();
-    }
-    public static boolean readFile(String inputUsername, String inputPassword) {
-        try {
-            File file = new File("resources/users.csv");
-            Scanner scanner = new Scanner(file);
-    
-            while (scanner.hasNextLine()) {
-                String[] userData = scanner.nextLine().split(",");
-                String fileUsername = userData[0];
-                String filePassword = userData[1];
-                if (fileUsername.equals(inputUsername) && filePassword.equals(inputPassword)) {
-                    System.out.println("Login successful!");
-                    scanner.close();
-                    return true;
-                }
-            }
-            scanner.close();
-            System.out.println("Invalid username or password.");
-        } catch (FileNotFoundException e) {
-            System.out.println("User file not found.");
-            e.printStackTrace();
-        }
-        return false;
-    }
+    }    
     public static void login(){
         Scanner scanner=new Scanner(System.in);
+        System.out.print("\n\n\t\t\t\t\t\t Cnic: ");
+        cnic= scanner.nextLong();
         while (loggedIn==false) {
             System.out.print("\n\n\t\t\t\t\t\t Username: ");
             username= scanner.nextLine();
             System.out.print("\n\n\t\t\t\t\t\t Password: ");
             password = scanner.nextLine();
-            readFile(storedUsername, password);
             if (username.equals(storedUsername) && password.equals(storedPassword)) {
                 loggedIn = true;
                 System.out.println("Login successful!");
@@ -165,7 +106,7 @@ public class Login {
                 }
             }
         }
-        AccountType.AccountType();
+        scanner.close();
     }
     public static void loginPage() {
         Scanner scanner = new Scanner(System.in);
@@ -188,6 +129,6 @@ public class Login {
             System.out.println("\n\n\t\t\t\t\tInvalid choice. Please choose 1 or 2 or 3.");
             loginPage();
             break;        }
+            scanner.close();
         }
-
-}
+    }
