@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 public class LoginRead {
-    static void searchFile(Scanner scanner,String cnic){
+    static void searchFileLogin(Scanner scanner,String cnic){
         while (scanner.hasNextLine()) {
             String[] userData = scanner.nextLine().split(",");
             String fileCnic = userData[0];
@@ -13,7 +13,41 @@ public class LoginRead {
                 Login.setStoredPassword(userData[6]);
                 Login.setStoredRecovery(userData[5]);
                 break;
+        }else{
+
         }
+    }
+}
+    static Boolean searchFileRegister(Scanner scanner,String cnic){
+        while (scanner.hasNextLine()) {
+            String[] userData = scanner.nextLine().split(",");
+            String fileCnic = userData[0];
+            if (fileCnic.equals(cnic)) {
+                return true;
+        }
+    }
+    return false;
+}
+public static void UserExist(String cnic) {
+    try {
+        File file1 = new File("resources/patients.csv");
+        File file2 = new File("resources/doctors.csv");
+        File file3 = new File("resources/admins.csv");
+        Scanner scanner1 = new Scanner(file1);
+        Scanner scanner2 = new Scanner(file2);
+        Scanner scanner3 = new Scanner(file3);
+        if(searchFileRegister(scanner1, cnic) ||
+        searchFileRegister(scanner2, cnic) ||
+        searchFileRegister(scanner3, cnic)){
+            System.out.println("User with same CNIC exist.");
+            Login.register();
+        }
+        scanner1.close();
+        scanner2.close();
+        scanner3.close();
+    } catch (FileNotFoundException e) {
+        System.out.println("User file not found.");
+        e.printStackTrace();
     }
 }
     public static void readFile(String cnic) {
@@ -24,9 +58,9 @@ public class LoginRead {
             Scanner scanner1 = new Scanner(file1);
             Scanner scanner2 = new Scanner(file2);
             Scanner scanner3 = new Scanner(file3);
-            searchFile(scanner1, cnic);
-            searchFile(scanner2, cnic);
-            searchFile(scanner3, cnic);
+            searchFileLogin(scanner1, cnic);
+            searchFileLogin(scanner2, cnic);
+            searchFileLogin(scanner3, cnic);
             scanner1.close();
             scanner2.close();
             scanner3.close();

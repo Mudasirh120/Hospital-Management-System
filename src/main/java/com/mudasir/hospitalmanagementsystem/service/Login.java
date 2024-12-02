@@ -65,6 +65,7 @@ public class Login {
         System.out.print("\t\t\t\t\t\t\t  Recovery key : ");
         recoverykey= scanner.nextLine();
         AccountType.Role();
+        LoginRead.UserExist(cnic);
         System.out.println("\n\n\t\t\t\t\t\t\t Successful Signup.");
         RegisterWrite.writeFile(accountType);
         login();
