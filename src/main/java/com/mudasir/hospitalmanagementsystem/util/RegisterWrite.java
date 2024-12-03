@@ -18,11 +18,12 @@ public class RegisterWrite {
           break;
           case "Admin":
           FileWriter myAdmins = new FileWriter("resources/admins.csv",true);
-          myAdmins.write(Login.getCnic() + "," + Login.getUserName() + "," + Login.getFatherName() + "," + Login.getCity()+ "," + Login.getAccountType() + "," + Login.getRecoveryKey()+ "," + Login.getPassword() +"\n");
+          myAdmins.write(Login.getCnic() + "," + Login.getUserName() + "," + Login.getFatherName() + "," + Login.getCity()+ "," + Login.getAccountType() + "," + Login.getRecoveryKey()+ "," + Login.getPassword() +","+"\n");
           myAdmins.close();
           break;
         }
       System.out.println("Successfully wrote to the file.");
+      Login.login();
     } catch (IOException e) {
       System.out.println("An error occurred.");
       e.printStackTrace();

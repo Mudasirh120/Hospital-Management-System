@@ -12,12 +12,49 @@ public class Login {
     private static String recoverykey;
     private static String accountType;
     private static String storedUsername;
+    private static String storedFatherName;
+    private static String storedCnic;
     private static String storedPassword;
+    private static String storedCity;
     private static String storedRecoveryKey;
+    private static String storedAccountType;
     private static boolean loggedIn = false;
     private static int choice;
+    public static String getStoredFatherName() {
+        return storedFatherName;
+    }
+    public static String getStoredCnic() {
+        return storedCnic;
+    }
+    public static String getStoredCity() {
+        return storedCity;
+    }
+    public static String getStoredAccType() {
+        return storedAccountType;
+    }
+    public static String getStoredRecoveryKey() {
+        return storedRecoveryKey;
+    }
+    public static String getStoredUsername() {
+        return storedUsername;
+    }
+    public static String getStoredPassword() {
+        return storedPassword;
+    }
     public static void setStoredUsername(String storedUsername) {
         Login.storedUsername = storedUsername;
+    }
+    public static void setStoredAccType(String accType) {
+        Login.storedAccountType = accType;
+    }
+    public static void setStoredCity(String nCity) {
+        Login.storedCity = nCity;
+    }
+    public static void setStoredCnic(String nCnic) {
+        Login.storedCnic = nCnic;
+    }
+    public static void setStoredFatherName(String nFather) {
+        Login.storedFatherName = nFather;
     }
     public static void setStoredPassword(String storedPassword){
         Login.storedPassword = storedPassword;
@@ -57,7 +94,6 @@ public class Login {
         fatherName = scanner.nextLine();
         System.out.print("\t\t\t\t\t\t\t  cnic: ");
         cnic = scanner.nextLine();
-        scanner.nextLine();
         System.out.print("\t\t\t\t\t\t\t  City: ");
         city = scanner.nextLine();
         System.out.print("\t\t\t\t\t\t\t  Password: ");
@@ -68,7 +104,6 @@ public class Login {
         LoginRead.UserExist(cnic);
         System.out.println("\n\n\t\t\t\t\t\t\t Successful Signup.");
         RegisterWrite.writeFile(accountType);
-        login();
         scanner.close();
     }    
     public static void login(){

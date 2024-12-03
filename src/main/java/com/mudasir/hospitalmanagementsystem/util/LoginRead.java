@@ -4,19 +4,22 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 public class LoginRead {
-    static void searchFileLogin(Scanner scanner,String cnic){
+    static Boolean searchFileLogin(Scanner scanner,String cnic){
         while (scanner.hasNextLine()) {
             String[] userData = scanner.nextLine().split(",");
             String fileCnic = userData[0];
             if (fileCnic.equals(cnic)) {
+                Login.setStoredCnic(userData[0]);
                 Login.setStoredUsername(userData[1]);
-                Login.setStoredPassword(userData[6]);
+                Login.setStoredFatherName(userData[2]);
+                Login.setStoredCity(userData[3]);
+                Login.setStoredAccType(userData[4]);
                 Login.setStoredRecovery(userData[5]);
-                break;
-        }else{
-
+                Login.setStoredPassword(userData[6]);
+                return true;
         }
     }
+    return false;
 }
     static Boolean searchFileRegister(Scanner scanner,String cnic){
         while (scanner.hasNextLine()) {
@@ -58,9 +61,12 @@ public static void UserExist(String cnic) {
             Scanner scanner1 = new Scanner(file1);
             Scanner scanner2 = new Scanner(file2);
             Scanner scanner3 = new Scanner(file3);
-            searchFileLogin(scanner1, cnic);
-            searchFileLogin(scanner2, cnic);
-            searchFileLogin(scanner3, cnic);
+            if(!searchFileLogin(scanner1, cnic)||
+            searchFileLogin(scanner2, cnic)||
+            searchFileLogin(scanner3, cnic)){
+                System.out.println("CNIC isn't Registered.");
+                Login.loginPage();
+            }
             scanner1.close();
             scanner2.close();
             scanner3.close();
