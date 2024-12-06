@@ -31,7 +31,7 @@ public class LoginRead {
     }
     return false;
 }
-public static void UserExist(String cnic) {
+public static boolean UserExist(String cnic) {
     try {
         File file1 = new File("resources/patients.csv");
         File file2 = new File("resources/doctors.csv");
@@ -42,8 +42,7 @@ public static void UserExist(String cnic) {
         if(searchFileRegister(scanner1, cnic) ||
         searchFileRegister(scanner2, cnic) ||
         searchFileRegister(scanner3, cnic)){
-            System.out.println("User with same CNIC exist.");
-            Login.register();
+            return true;
         }
         scanner1.close();
         scanner2.close();
@@ -52,8 +51,9 @@ public static void UserExist(String cnic) {
         System.out.println("User file not found.");
         e.printStackTrace();
     }
+    return false;
 }
-    public static void readFile(String cnic) {
+    public static boolean readFile(String cnic) {
         try {
             File file1 = new File("resources/patients.csv");
             File file2 = new File("resources/doctors.csv");
@@ -64,8 +64,7 @@ public static void UserExist(String cnic) {
             if(!searchFileLogin(scanner1, cnic)||
             searchFileLogin(scanner2, cnic)||
             searchFileLogin(scanner3, cnic)){
-                System.out.println("CNIC isn't Registered.");
-                Login.loginPage();
+                return false;
             }
             scanner1.close();
             scanner2.close();
@@ -74,5 +73,6 @@ public static void UserExist(String cnic) {
             System.out.println("User file not found.");
             e.printStackTrace();
         }
+        return false;
     }
 }

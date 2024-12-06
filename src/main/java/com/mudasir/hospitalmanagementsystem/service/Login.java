@@ -2,6 +2,11 @@ package com.mudasir.hospitalmanagementsystem.service;
 import com.mudasir.hospitalmanagementsystem.util.AccountType;
 import com.mudasir.hospitalmanagementsystem.util.LoginRead;
 import com.mudasir.hospitalmanagementsystem.util.RegisterWrite;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 public class Login {
     private static String username;
@@ -18,8 +23,6 @@ public class Login {
     private static String storedCity;
     private static String storedRecoveryKey;
     private static String storedAccountType;
-    private static boolean loggedIn = false;
-    private static int choice;
     public static String getStoredFatherName() {
         return storedFatherName;
     }
@@ -86,118 +89,196 @@ public class Login {
     public static String getPassword(){
         return password;
     }
-    public static void register(){
+    public static void register() {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("\t\t\t\t\t\t\t  Username: ");
-        username = scanner.nextLine();
-        System.out.print("\t\t\t\t\t\t\t  FatherName: ");
-        fatherName = scanner.nextLine();
-        System.out.print("\t\t\t\t\t\t\t  cnic: ");
-        cnic = scanner.nextLine();
-        System.out.print("\t\t\t\t\t\t\t  City: ");
-        city = scanner.nextLine();
-        System.out.print("\t\t\t\t\t\t\t  Password: ");
-        password = scanner.nextLine();
-        System.out.print("\t\t\t\t\t\t\t  Recovery key : ");
-        recoverykey= scanner.nextLine();
+        System.out.println("\n----- Registration -----");    
+        System.out.print("Enter Username: ");
+        username = scanner.nextLine().trim();
+        while (username.isEmpty()) {
+            System.out.print("Username cannot be empty. Enter again: ");
+            username = scanner.nextLine().trim();
+        }
+        System.out.print("Enter Father's Name: ");
+        fatherName = scanner.nextLine().trim();
+        while (fatherName.isEmpty()) {
+            System.out.print("Father's Name cannot be empty. Enter again: ");
+            fatherName = scanner.nextLine().trim();
+        }
+        System.out.print("Enter CNIC (13 digits): ");
+        cnic = scanner.nextLine().trim();
+        while (!cnic.matches("\\d{13}")) {
+            System.out.print("Invalid CNIC. Enter a valid 13-digit CNIC: ");
+            cnic = scanner.nextLine().trim();
+        }
+        System.out.print("Enter City: ");
+        city = scanner.nextLine().trim();
+        while (city.isEmpty()) {
+            System.out.print("City cannot be empty. Enter again: ");
+            city = scanner.nextLine().trim();
+        }
+        System.out.print("Enter Password (minimum 6 characters): ");
+        password = scanner.nextLine().trim();
+        while (password.length() < 6) {
+            System.out.print("Password must be at least 6 characters. Enter again: ");
+            password = scanner.nextLine().trim();
+        }
+        System.out.print("Enter Recovery Key (for password reset): ");
+        recoverykey = scanner.nextLine().trim();
+        while (recoverykey.isEmpty()) {
+            System.out.print("Recovery Key cannot be empty. Enter again: ");
+            recoverykey = scanner.nextLine().trim();
+        }
         AccountType.Role();
-        LoginRead.UserExist(cnic);
-        System.out.println("\n\n\t\t\t\t\t\t\t Successful Signup.");
+        if (LoginRead.UserExist(cnic)) {
+            System.out.println("A user with this CNIC already exists. Please try logging in.");
+            loginPage();
+            scanner.close();
+            return;
+        }
         RegisterWrite.writeFile(accountType);
+        System.out.println("Registration successful! You can now log in.");
+        loginPage();
+        scanner.close();
+    }        
+    public static void resetPassword() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("----- Password Recovery -----");
+        System.out.print("Enter your Recovery Key: ");
+        String enteredRecoveryKey = scanner.nextLine();
+        if (enteredRecoveryKey.equals(storedRecoveryKey)) {
+            System.out.print("Enter a new Password: ");
+            String newPassword = scanner.nextLine();
+            while (newPassword.length() < 6) {
+                System.out.print("Password must be at least 6 characters. Enter again: ");
+                newPassword = scanner.nextLine();
+            }
+            setStoredPassword(newPassword);
+            if (updatePasswordInFile(cnic, newPassword)) {
+                System.out.println("Password updated successfully!");
+            } else {
+                System.out.println("Failed to update password in file.");
+            }
+            login();
+        } else {
+            System.out.println("Incorrect recovery key. Returning to main menu.");
+            loginPage();
+        }
         scanner.close();
     }    
-    public static void login(){
-        Scanner scanner=new Scanner(System.in);
-        System.out.print("\t\t\t\t\t\t\t  cnic: ");
+    public static void login() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("----- Login -----");
+        System.out.print("Enter your CNIC: ");
         cnic = scanner.nextLine();
-        LoginRead.readFile(cnic);
-        while (loggedIn==false) {
-            System.out.print("\n\n\t\t\t\t\t\t Username: ");
-            username= scanner.nextLine();
-            System.out.print("\n\n\t\t\t\t\t\t Password: ");
+        if (!LoginRead.readFile(cnic)) {
+            System.out.println("Unregistered CNIC. Please register first.");
+            register();
+            scanner.close();
+            return;
+        }
+        int attempts = 3; 
+        while (attempts > 0) {
+            System.out.print("Username: ");
+            username = scanner.nextLine();
+            System.out.print("Password: ");
             password = scanner.nextLine();
             if (username.equals(storedUsername) && password.equals(storedPassword)) {
-                loggedIn = true;
                 System.out.println("Login successful!");
                 Menu.displayMenu();
+                scanner.close();
+                return;
+            } else {
+                attempts--;
+                System.out.println("Invalid username or password. Attempts remaining: " + attempts);
             }
-            else if (username.equals(storedUsername) && !password.equals(storedPassword)) {
-                System.out.println("\n\n\t\t\t\t\tIncorrect password.");
-                System.out.println("\n\n\t\t\tPress Y to change password, R to Register, and N to Retry login.");
-                char pchange = scanner.nextLine().charAt(0);
-                if (pchange == 'R' || pchange == 'r') {
-                    register();
-                }
-                else if (pchange == 'Y' || pchange == 'y') {
-                    while (true) {
-                        System.out.println("\n\n\t\t\t\t\t Enter login credentials.\n\n");
-                        System.out.print("\n\n\t\t\t\t\tEnter your Username: ");
-                        String newUsername= scanner.nextLine();
-                        if (newUsername.equals(storedUsername)) {
-                            System.out.println("Enter your Recovery key :");
-                            String newRecovery = scanner.nextLine();
-                            if (newRecovery.equals(recoverykey)) {
-                                System.out.print("\n\n\t\t\t\t\tEnter new password: ");
-                                storedPassword = scanner.nextLine();
-                                break;
-                            }else{
-                                System.out.println("\n\n\t\t\tPress Y to retry, R to Register, and L to login.");
-                                 pchange = scanner.nextLine().charAt(0);
-                                if (pchange == 'R' || pchange == 'r') {
-                                    register();
-                                }
-                                else if (pchange == 'L' || pchange == 'l') {
-                                    login();
-                                }
-                            }
-                        } else
-                        {
-                            System.out.println("\n\n\t\t\t\t\tNo match for user.");
-                            System.out.println("\n\n\t\t\t\t\tPress Y to retry and N to Retry login.");
-                            pchange = scanner.nextLine().charAt(0);
-                            if (pchange == 'N' || pchange == 'n') {
-                                break;
-                            }
-                        }
-                    }
-                }                    }
-            else if (!username.equals(storedUsername) && password.equals(storedPassword))
-            {                        System.out.println("\n\n\t\t\t\t\tIncorrect Username.");
-            } else
-            {                        System.out.println("\n\n\t\t\t\t\tUnregistered user.");
-                System.out.println("\n\n\t\t\t\t\tTo retry press 1.");
-                System.out.println("\n\n\t\t\t\t\tTo go back to Register press 2.");
-                choice = scanner.nextInt();
-                if (choice == 2) {
-                    register();
-                    loggedIn = false;
-                    break;
-                }
-            }
+        }
+        System.out.println("Too many failed attempts.");
+        System.out.println("Do you want to reset your password? (Y/N)");
+        char resetChoice = scanner.nextLine().toUpperCase().charAt(0);
+        if (resetChoice == 'Y') {
+            resetPassword();
+        } else {
+            loginPage();
         }
         scanner.close();
-    }
+    }        
     public static void loginPage() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("\n\n\t\t\t\t\t\t\t   Welcome to Shifa Khana \n\n");
-        System.out.println("\n\n\n\t\t\t\t\t\t\t\t1. Login");
-        System.out.println("\t\t\t\t\t\t\t\t2. Register");
-        System.out.println("\t\t\t\t\t\t\t\t3. Exit");
-        System.out.println("\t\t\t\t\t\t\t      Choose an option.");
-        choice = scanner.nextInt();
-        switch (choice) {
-            case 1:
-             login()  ;
-        break;
-        case 2:
-            register();
-            break;
-        case 3:
-            break;
-        default:
-            System.out.println("\n\n\t\t\t\t\tInvalid choice. Please choose 1 or 2 or 3.");
+        System.out.println("\n----- Welcome to Shifa Khana -----\n");
+        System.out.println("1. Login");
+        System.out.println("2. Register");
+        System.out.println("3. Exit");
+        System.out.print("Choose an option: ");
+        try {
+            int choice = Integer.parseInt(scanner.nextLine()); 
+            switch (choice) {
+                case 1:
+                    login();
+                    break;
+                case 2:
+                    register();
+                    break;
+                case 3:
+                    System.out.println("Thank you for using Shifa Khana. Goodbye!");
+                    scanner.close();
+                    return; 
+                default:
+                    System.out.println("Invalid choice. Please choose 1, 2, or 3.");
+                    loginPage(); 
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a number.");
             loginPage();
-            break;        }
-            scanner.close();
+        }
+        scanner.close();
+    }    
+        private static boolean updatePasswordInFile(String cnic, String newPassword) {
+    String filePath = getRoleFilePath(storedAccountType); 
+    File inputFile = new File(filePath);
+    File tempFile = new File(filePath + ".tmp"); 
+    try (Scanner scanner = new Scanner(inputFile); FileWriter writer = new FileWriter(tempFile)) {
+        boolean updated = false;
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            String[] userData = line.split(",");
+            if (userData[0].equals(cnic)) { 
+                userData[6] = newPassword; 
+                updated = true;
+            }
+            writer.write(String.join(",", userData) + "\n");
+        }
+        if (!inputFile.delete() || !tempFile.renameTo(inputFile)) {
+            System.out.println("Error replacing file with updated data.");
+            return false;
+        }
+        return updated;
+    } catch (IOException e) {
+        System.out.println("File operation error: " + e.getMessage());
+        return false;
+    }
+}
+public static String getRoleFilePath(String role) {
+    switch (role) {
+        case "Patient":
+            return "resources/patients.csv";
+        case "Doctor":
+            return "resources/doctors.csv";
+        case "Admin":
+            return "resources/admins.csv";
+        default:
+            throw new IllegalArgumentException("Invalid role: " + role);
+    }
+}
+    public static boolean updateUserDetailsInFile(String roleFile) {
+        try {
+            FileWriter fileWriter = new FileWriter(roleFile, true);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write("Updated User Details");
+            bufferedWriter.close();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
         }
     }
+}

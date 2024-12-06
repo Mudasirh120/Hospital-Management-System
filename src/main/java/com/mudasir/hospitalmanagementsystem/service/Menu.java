@@ -19,10 +19,14 @@ public class Menu {
             case 1 :
                Account.displayAccount();
                break;
-            case 2 :
-              break;
-            case 3:
-              break;
+               case 2:
+               Appointment.bookAppointment();
+               break;
+           case 3:
+               System.out.print("Enter your CNIC: ");
+               String cnic = scanner.nextLine();
+              //  Appointment.viewAppointments(cnic);
+               break;
             case 4:
                 break;
             case 5:
